@@ -103,6 +103,10 @@ export const AGENT_SYSTEM_PROMPT = [
     '  actions over many.',
     '- Grid coordinates are (i, j) = (column, row). Only free cells can be built',
     '  on; walls, the base and existing towers are occupied.',
+    '- The state lists `routes`, one per enemy spawn, and enemies use all of them.',
+    '  Cover every route; do not pour everything into a single lane unless the',
+    '  player strategy explicitly says so. Each entry in `buildCandidates` carries',
+    '  the route it serves, so there is a suggestion for every lane.',
     '- Follow the player strategy. Do not invent goals the player did not ask for.',
     '- Return tool calls only. Do not explain.',
 ].join('\n');

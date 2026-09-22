@@ -97,18 +97,24 @@ export interface EnemyComposition {
     nearestThreat: ThreatInfo | null;
 }
 
-/** A cell worth building on, scored by how much of the enemy route it covers. */
+/** A cell worth building on, scored by how much of the enemy routes it covers. */
 export interface BuildCandidate {
     i: number;
     j: number;
-    /** Route cells within the reference aim radius; higher means longer coverage. */
+    /** Index into `GameSnapshot.routes` of the route this cell primarily serves. */
+    route: number;
+    /** Cells of that route within the reference aim radius; higher means longer coverage. */
     coverage: number;
     /** Route distance from this cell to the base, in tiles. Lower is nearer the base. */
     distanceToBase: number;
+    /** How many distinct routes this cell overlaps; >1 is a shared choke point. */
+    routesCovered: number;
 }
 
-/** The enemy route, compressed to its turns instead of every traversed cell. */
-export interface PathInfo {
+/** One enemy route, compressed to its turns instead of every traversed cell. */
+export interface RouteInfo {
+    /** The spawn this route starts from. */
+    spawn: { i: number; j: number };
     waypoints: Array<{ i: number; j: number }>;
     /** Total route length in tiles. */
     length: number;
@@ -129,6 +135,7 @@ export interface GameSnapshot {
     enemies: EnemyComposition;
     towers: TowerInfo[];
     towerOptions: TowerOption[];
-    path: PathInfo | null;
+    /** One entry per spawn; there can be 1-4, and every one must be defended. */
+    routes: RouteInfo[];
     buildCandidates: BuildCandidate[];
 }

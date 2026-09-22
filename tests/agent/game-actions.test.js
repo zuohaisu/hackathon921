@@ -100,7 +100,7 @@ class FakeBattlefield {
             enemies: {total: 0, groups: [], nearestThreat: null},
             towers: this.towers(),
             towerOptions: this._options,
-            path: null,
+            routes: [],
             buildCandidates: [],
         };
     }
@@ -232,8 +232,8 @@ test('getState returns the snapshot the battlefield provides', () => {
         enemies: {total: 3, groups: [{type: 'simple', count: 3, avgLife: 10, avgRemainingLife: 8}], nearestThreat: null},
         towers: [],
         towerOptions: OPTIONS,
-        path: {waypoints: [{i: 0, j: 9}, {i: 5, j: 5}], length: 12},
-        buildCandidates: [{i: 1, j: 8, coverage: 3, distanceToBase: 10}],
+        routes: [{spawn: {i: 0, j: 9}, waypoints: [{i: 0, j: 9}, {i: 5, j: 5}], length: 12}],
+        buildCandidates: [{i: 1, j: 8, route: 0, coverage: 3, distanceToBase: 10, routesCovered: 1}],
     };
     field._snapshot = snapshot;
 
