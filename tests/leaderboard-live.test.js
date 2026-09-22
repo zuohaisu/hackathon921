@@ -33,13 +33,13 @@ async function test(name, fn) {
             './EnemyManager': { enemyManager: { add() {} } },
             './entities/enemies/BossEnemy': { BossEnemy: class {} },
             './Map': { map: { enemyBases: [] } },
-            './tools/helphers': {
-                asyncSleep: async () => {},
-                asyncSleepIntervalSecond: async () => {
+            './tools/helphers': { rand: () => 0 },
+            './agent/GameLoop': { gameLoop: {
+                sleep: async () => {},
+                holdForPlanning: async () => {
                     if (++delays > 3) waveManager.looping = false;
                 },
-                rand: () => 0,
-            },
+            } },
             './InterfaceManager': { interfaceManager: {
                 setWave(wave) { displayedWave = wave; },
                 setWaveDelay() {},
@@ -68,11 +68,11 @@ async function test(name, fn) {
             './EnemyManager': { enemyManager: { add() {} } },
             './entities/enemies/BossEnemy': { BossEnemy: class {} },
             './Map': { map: { enemyBases: [] } },
-            './tools/helphers': {
-                asyncSleep: async () => {},
-                asyncSleepIntervalSecond: async () => { waveManager.looping = false; },
-                rand: () => 0,
-            },
+            './tools/helphers': { rand: () => 0 },
+            './agent/GameLoop': { gameLoop: {
+                sleep: async () => {},
+                holdForPlanning: async () => { waveManager.looping = false; },
+            } },
             './InterfaceManager': { interfaceManager: { setWave() {}, setWaveDelay() {}, clearWaveDelay() {} } },
             './entities/enemies/Enemy': {},
             './entities/terrain/Base': {},
@@ -94,7 +94,7 @@ async function test(name, fn) {
         const game = loadSource('Game.ts', {
             './Canvas': { canvas: {}, ctx: {} },
             './config.json': { fps: 60 },
-            './Controls': { controls: {} },
+            './Controls': { controls: { on() {}, tabHasFocus: () => true } },
             './Map': { map: { on() {} } },
             './Camera': { camera: {} },
             './EnemyManager': { enemyManager: {} },
@@ -104,7 +104,11 @@ async function test(name, fn) {
             './WavesManager': { waveManager },
             './leaderboard/LeaderboardUI': { submitRunScore: (name, wave) => submissions.push([name, wave]) },
             './leaderboard/LeaderboardStore': { readUsernameCookie: () => username },
+            './agent/GameLoop': { gameLoop: { setFocused() {} } },
+            './agent/GameActions': { GameActions: class {} },
+            './agent/InertBattlefield': { InertBattlefield: class {} },
         }, {
+            window: {},
             setInterval: () => 1,
             requestAnimationFrame: () => 1,
             setTimeout: fn => fn(),

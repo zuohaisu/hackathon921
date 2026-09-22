@@ -1,3 +1,4 @@
+import "./styles/styles.less";
 import { game } from './Game';
 import { UsernameGate, leaderboardPanel } from './leaderboard/LeaderboardUI';
 import { readUsernameCookie } from './leaderboard/LeaderboardStore';

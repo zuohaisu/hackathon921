@@ -10,7 +10,7 @@
 
 ## 技术栈与真值来源
 
-- TypeScript + Vite + HTML5 Canvas。游戏底座 fork 自 inert（MIT），**必须保留原 LICENSE 与原作者署名**。
+- TypeScript + Vite + HTML5 Canvas。游戏底座 fork 自 inert（**GPL-3.0** —— 上游 README 误写为 MIT，以仓库 `LICENSE` 为准），**必须保留原 LICENSE 与原作者署名**。
 - 包管理器的 lockfile 是真值来源，依赖变更必须连同 lockfile 一起提交。
 - **产品真值是 `docs/PRODUCT_CONCEPT.md`** —— 它只记录已确认的决定，末尾的「未决问题」清单同样有约束力：列在那里的事项尚未决定，不得当作需求实现。
 - `docs/IDEA.md` 与 `docs/USER_STORY.md` 是背景、意图和用户故事，用于理解「为什么」，不是需求规格。
@@ -87,6 +87,13 @@
 - **产生了新的已确认决定时，更新 `docs/PRODUCT_CONCEPT.md`**：把决定写进正文，并把对应条目从末尾的「未决问题」清单中移除。本项目目前不使用独立的 ADR 机制。
 - 注释解释某个不变量或权宜之计「为什么存在」，不要复述显而易见的代码。
 - 最终交接必须列出改动的文件、运行过的命令及其结果，以及任何未解决的假设、风险或跳过的检查。适用 Git 流程时附上分支、提交、PR URL 和 CI 结果。不要声称未曾执行的验证。
+
+## 前端版本号
+
+- 页脚版本号的来源是 `package.json` 的 `version` 字段：`src/InterfaceManager.ts` 在运行时把它渲染成 `v<version>`。`index.html` 中 `#version` 的静态文本只是脚本加载前的占位，**必须与 `package.json` 保持一致**，否则首屏与最终显示会不一致。`package-lock.json` 根部的 `version`（两处）也同步更新。
+- **每个 PR 都必须递增前端版本号**，纯文档改动也不例外；版本号随本次改动一起提交，不要留到后续 PR 补。
+- 默认只自增第三段（如 `0.1.3` → `0.1.4`），前两段保持不变。
+- **大版本由人类明确给出后再改**，不要自行决定第一段或第二段的跃迁。
 
 ## Agent 技能
 

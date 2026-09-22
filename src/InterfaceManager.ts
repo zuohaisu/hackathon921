@@ -11,6 +11,7 @@ import {SlowTower} from "./entities/towers/SlowTower";
 import {controls} from "./Controls";
 import {queryParamsManager} from "./QueryParamsManager";
 import {textureManager} from "./tools/TextureManager";
+import {gameLoop, GameState} from "./agent/GameLoop";
 
 class InterfaceManager {
     private versionElement = document.getElementById('version')!;
@@ -18,7 +19,8 @@ class InterfaceManager {
     private cashElement = document.getElementById('cash')!;
     private towersWrapperElement = document.getElementById('towers-wrapper')!;
     private towersStatsElement = document.getElementById('towers-stats')!;
-    private waveDelayElement = document.getElementById('delay')!;
+    private stateElement = document.getElementById('state')!;
+    private speedElement = document.getElementById('speed')!;
     private gameOverElement = document.getElementById('game-over')!;
     public snackbar = new Snackbar();
 
@@ -27,11 +29,22 @@ class InterfaceManager {
         controls.on('focusout', this.showFocusLost.bind(this));
         controls.on('focusin', this.hideFocusLost.bind(this));
 
-        if(!controls.tabHasFocus()) {
+        if(!controls.tabHasFocus()) {
             this.showFocusLost()
         }
 
         document.getElementById('spawner' + queryParamsManager.getDifficulty())!.classList.add('active')
+
+        document.getElementById('pause')!.onclick = () => gameLoop.pause();
+        document.getElementById('resume')!.onclick = () => gameLoop.resume();
+        this.speedElement.onclick = () => {
+            gameLoop.setSpeed(gameLoop.speed === 1 ? 2 : 1);
+            this.updateSpeedLabel();
+        };
+
+        gameLoop.onChange(state => this.setState(state));
+        this.setState(gameLoop.state);
+        this.updateSpeedLabel();
 
         this.setTowers()
     }
@@ -50,12 +63,12 @@ class InterfaceManager {
         this.waveElement.textContent = String(wave);
     }
 
-    setWaveDelay(sec: number) {
-        this.waveDelayElement.textContent = `(${sec}s)`;
+    setState(state: GameState) {
+        this.stateElement.textContent = state.toUpperCase();
     }
 
-    clearWaveDelay() {
-        this.waveDelayElement.textContent = '';
+    updateSpeedLabel() {
+        this.speedElement.textContent = `Speed x${gameLoop.speed}`;
     }
 
     setCash(cash: number) {
@@ -103,13 +116,19 @@ class InterfaceManager {
             `${(tower.damage.min / reloadDuration).toFixed(0)} - ${(tower.damage.max / reloadDuration).toFixed(0)}` :
             tower.damage / reloadDuration;
 
+        // `damage` is either a number or a {min,max} range. The old bare
+        // `tower.damage > 0` was always false for the range case (object > number),
+        // so the typeof guard keeps the rendered output identical while satisfying
+        // TS 5's stricter relational-operator check. Range-damage towers (laser)
+        // therefore still show no damage rows — a pre-existing bug this migration
+        // deliberately does not change.
         this.towersStatsElement.innerHTML = `
             <div class="title">${tower.name}</div>
             <div class="description">${tower.description}</div>
             <table class="table5050">
                 <tr><td>Cost: </td><td class="accent">${tower.cost} ¢</td></tr>
                 <tr><td>Aim radius:</td><td class="accent">${tower.aimRadius}</td></tr>
-                ${tower.damage > 0 ? `
+                ${typeof tower.damage === 'number' && tower.damage > 0 ? `
                     <tr><td>Damage:</td><td class="accent">${damage}</td></tr>
                     <tr><td>Reload:</td><td class="accent">${reloadDuration.toFixed(3)} s</td></tr>
                     <tr><td title="Damage Per Second">DPS:</td><td class="accent">${dps}</td></tr>
