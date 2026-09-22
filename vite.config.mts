@@ -14,7 +14,15 @@ export default defineConfig({
         emptyOutDir: true
     },
     server: {
-        port: 5173
+        port: 5173,
+        /**
+         * Same-origin in development, mirroring production where nginx serves
+         * both the app and the agent proxy under /api/ (issue #22). Run the
+         * proxy separately with `npm run server`.
+         */
+        proxy: {
+            '/api': 'http://127.0.0.1:8787'
+        }
     },
     preview: {
         port: 4173
